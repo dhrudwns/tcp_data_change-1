@@ -119,7 +119,7 @@ static u_int32_t print_pkt (struct nfq_data *tb)
 			u_int16_t len = (ipH->ip_hl * 4)+(tcpH->th_off * 4);
 
 			flag = 0;
-			if(ntohs(tcpH->th_sport) == 80 && (ipH->ip_len > len)){
+			if(ntohs(tcpH->th_sport) == 80 && (htons(ipH->ip_len) > len)){
 				data += (tcpH->th_off * 4);
 				string s_data, search, change;
 				search = "hacking";
