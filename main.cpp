@@ -90,7 +90,6 @@ uint16_t calTCPChecksum(uint8_t *data,int dataLen)
     else
         checksum=tempCheck;
 
-
     checksum=ntohs(checksum^0xffff); //xor checksum
     tcph->th_sum=checksum;
 
@@ -119,23 +118,25 @@ static u_int32_t print_pkt (struct nfq_data *tb)
 			struct libnet_tcp_hdr* tcpH = (struct libnet_tcp_hdr *) data;
 			u_int16_t len = (ipH->ip_hl * 4)+(tcpH->th_off * 4);
 
+			flag = 0;
 			if(ntohs(tcpH->th_sport) == 80 && (ipH->ip_len > len)){
 				data += (tcpH->th_off * 4);
-				string s_data;
+				string s_data, search, change;
+				search = "hacking";
+				change = "HOOKING";
 				s_data = (char *) data;
 
-				if(s_data.find("hacking") != string::npos){
+				if(s_data.find(search) != string::npos){
 					size_t pos = 0;
-					while((pos = s_data.find("hacking", pos)) != string::npos){
-						s_data.replace(pos, 7, "HOOKING");
-						pos += 7;
+					while((pos = s_data.find(search, pos)) != string::npos){
+						s_data.replace(pos, search.length(), change);
+						pos += change.length();
 					}
 					memcpy((new_data + len), s_data.c_str(), (ret - len));
 					calTCPChecksum(new_data ,ret);
 					new_data_len = ret;
 					flag = 1;
 				}
-				else flag = 0;
 			}
 
 		}
