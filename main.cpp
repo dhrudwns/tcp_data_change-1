@@ -1,12 +1,8 @@
-
 #include <stdio.h>
 #include <stdlib.h>					//strncmp
 #include <string>					//std::string
 #include <string.h>
 #include <iostream>
-#include <unordered_set>
-#include <set>
-#include <fstream>
 #include <unistd.h>
 #include <netinet/in.h>
 #include <linux/types.h>
@@ -101,6 +97,7 @@ uint16_t calTCPChecksum(uint8_t *data,int dataLen)
     return checksum;
 }
 
+
 static u_int32_t print_pkt (struct nfq_data *tb)
 {
 	int id = 0;
@@ -135,13 +132,6 @@ static u_int32_t print_pkt (struct nfq_data *tb)
 					}
 					memcpy((new_data + len), s_data.c_str(), (ret - len));
 					calTCPChecksum(new_data ,ret);
-//					cout << "------------------------------------------------------------" << ret << endl;
-//					cout << (data + len) << endl;
-//					for(int i=0; i<ret; i++){
-//						if(i % 8 == 0) cout << "   ";
-//						if(i % 16 == 0) cout << endl;
-//						printf("%02x ", new_data[i+2]);
-//					}
 					new_data_len = ret;
 					flag = 1;
 				}
@@ -161,9 +151,10 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 
     if(flag == 0)
     	return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
-    else
+    else {
+	cout << "change!" << endl;
 	return nfq_set_verdict(qh, id, NF_ACCEPT, new_data_len, new_data);
-
+    }
 }
 
 int main(int argc, char **argv)
